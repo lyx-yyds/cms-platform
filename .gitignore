@@ -1,0 +1,33 @@
+# ===== 依赖与构建产物 =====
+**/node_modules/
+**/dist/
+**/build/
+**/target/
+**/.vite/
+
+# ===== IDE / 编辑器 =====
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+
+# ===== 系统 =====
+.DS_Store
+Thumbs.db
+
+# ===== 日志 =====
+*.log
+logs/
+
+# ===== 本地敏感配置（含数据库密码/密钥，不进公开仓库）=====
+# 仓库里提供 application-example.yml 作为模板，首次运行复制为 application.yml 并填入本地值
+cms-backend/src/main/resources/application.yml
+cms-backend/src/main/resources/application-dev.yml
+
+# ===== 个人面试/简历准备材料（非项目代码，不公开）=====
+面试*.md
+简历*.md

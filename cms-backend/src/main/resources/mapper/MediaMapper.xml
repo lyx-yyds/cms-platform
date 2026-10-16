@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cms.mapper.MediaMapper">
+
+    <select id="selectMediaPage" resultType="com.cms.dto.response.MediaResp">
+        SELECT m.id, m.name, m.original_name, m.url, m.type, m.size, m.extension,
+               m.upload_user_id, u.nickname AS upload_user_nickname, m.create_time
+        FROM cms_media m
+        LEFT JOIN sys_user u ON u.id = m.upload_user_id
+        <where>
+            <if test="type != null and type != ''">
+                AND m.type LIKE CONCAT('%', #{type}, '%')
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (m.original_name LIKE CONCAT('%', #{keyword}, '%')
+                  OR m.name LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+        ORDER BY m.id DESC
+    </select>
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cms.mapper.VisitLogMapper">
+
+    <!-- PV = 原始请求计数；UV = 按 (user_id, ip) 去重（登录用户按 id，游客按 ip，文档 7.11） -->
+    <select id="selectPvUvByDay" resultType="java.util.Map">
+        SELECT DATE_FORMAT(create_time, '%Y-%m-%d') AS time,
+               COUNT(*) AS pv,
+               COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN CONCAT('u', user_id) ELSE CONCAT('ip', ip_address) END) AS uv
+        FROM sys_visit_log
+        WHERE create_time &gt;= #{start}
+        GROUP BY DATE_FORMAT(create_time, '%Y-%m-%d')
+        ORDER BY time
+    </select>
+
+    <select id="selectPvUvByMonth" resultType="java.util.Map">
+        SELECT DATE_FORMAT(create_time, '%Y-%m') AS time,
+               COUNT(*) AS pv,
+               COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN CONCAT('u', user_id) ELSE CONCAT('ip', ip_address) END) AS uv
+        FROM sys_visit_log
+        WHERE create_time &gt;= #{start}
+        GROUP BY DATE_FORMAT(create_time, '%Y-%m')
+        ORDER BY time
+    </select>
+
+    <!-- 按日新增用户 -->
+    <select id="selectUserGrowthByDay" resultType="java.util.Map">
+        SELECT DATE_FORMAT(create_time, '%Y-%m-%d') AS time, COUNT(*) AS count
+        FROM sys_user
+        WHERE create_time &gt;= #{start}
+        GROUP BY DATE_FORMAT(create_time, '%Y-%m-%d')
+        ORDER BY time
+    </select>
+
+    <select id="selectUserGrowthByMonth" resultType="java.util.Map">
+        SELECT DATE_FORMAT(create_time, '%Y-%m') AS time, COUNT(*) AS count
+        FROM sys_user
+        WHERE create_time &gt;= #{start}
+        GROUP BY DATE_FORMAT(create_time, '%Y-%m')
+        ORDER BY time
+    </select>
+
+    <!-- 角色分布 -->
+    <select id="selectRoleDistribution" resultType="java.util.Map">
+        SELECT r.name AS role_name, COUNT(ur.user_id) AS count
+        FROM sys_role r
+        LEFT JOIN sys_user_role ur ON ur.role_id = r.id
+        GROUP BY r.id, r.name
+        ORDER BY count DESC
+    </select>
+
+    <!-- 文章状态分布（0-草稿 1-已发布 2-已下架） -->
+    <select id="selectArticleStatusCount" resultType="java.util.Map">
+        SELECT status, COUNT(*) AS count
+        FROM cms_article
+        WHERE is_deleted = 0
+        GROUP BY status
+    </select>
+</mapper>
